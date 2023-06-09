@@ -1,0 +1,63 @@
+﻿@model List<Plato>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+</style>
+
+<div class="container">
+    <h1>CRUD de Platos</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Lista de Platos</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Precio</th>
+                        <th>Categoría</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var plato in Model)
+                    {
+                        <tr>
+                            <td>@plato.Nombre</td>
+                            <td>@plato.Descripcion</td>
+                            <td>@plato.Precio</td>
+                            <td>@plato.Categoria</td>
+                            <td>
+                                <a href="@Url.Action("Editar", new { id = plato.Id })" class="btn btn-primary btn-sm">Editar</a>
+                                <a href="@Url.Action("Eliminar", new { id = plato.Id })" class="btn btn-danger btn-sm">Eliminar</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <a href="@Url.Action("Crear")" class="btn btn-success">Crear Nuevo Plato</a>
+        </div>
+    </div>
+</div>
+
+
+
