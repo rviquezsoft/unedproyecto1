@@ -5,6 +5,10 @@
       "PackagePath": "staticwebassets/Proyecto1.bundle.scp.css"
     },
     {
+      "Id": "/Users/richardviquez/Projects/Proyecto1/wwwroot/css/global.css",
+      "PackagePath": "staticwebassets/css/global.css"
+    },
+    {
       "Id": "/Users/richardviquez/Projects/Proyecto1/wwwroot/favicon.ico",
       "PackagePath": "staticwebassets/favicon.ico"
     },

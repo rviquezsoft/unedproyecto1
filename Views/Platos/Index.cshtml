@@ -1,63 +1,169 @@
-﻿@model List<Plato>
-
-@{
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
-
+﻿
 
 <style>
-    html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        font-family: Arial, Helvetica, sans-serif;
+
+    .remove {
+        color: white;
+        background-color: #ff4757;
     }
 
-    .container {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
+    .tablescroll {
+        overflow-y: scroll;
     }
+
+    .button {
+        margin-top: 1vh;
+        background: linear-gradient(176deg, rgba(3,104,221,1) 0%, rgba(21,31,133,1) 40%, rgba(29,102,187,1) 100%);
+        color: white;
+        padding: 1vh;
+        min-width:50%;
+        text-align:center;
+    }
+    .blocks{
+        display:grid;
+        width:100%;
+        height:100%;
+        grid-template-columns:repeat(auto-fill,minmax(12rem,1fr));
+        grid-column-gap:1px;
+        grid-auto-rows:12rem;
+    }
+    .block {
+        display: grid;
+        max-height: 12rem;
+        min-width: 99%;
+        height: 100%;
+        width: 99%;
+        grid-template-rows: 20% 60% 20%;
+        text-align: center;
+        background-color:white;
+        box-shadow: 2px 2px 8px 4px #d3d3d3d1;
+        border-radius: 15px;
+    }
+    .block img{
+        max-width:100%;
+        max-height:100%;
+        width:100%;
+        height:100%;
+    }
+    .block a{
+        width:100%;
+    }
+    h1,h2{
+        text-align:center;
+    }
+   
 </style>
 
-<div class="container">
-    <h1>CRUD de Platos</h1>
 
+<div class="container-fluid" style="margin-top:2vh;margin-bottom:1vh;">
     <div class="row">
+        <div class="col-md-6 form">
+            <h1>Mantenimiento de Platos</h1>
+            <h2>Crear Nuevo Plato</h2>
+            <div>
+                <div class="form-group">
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" value="nombre" class="form-control" id="nombre" name="nombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="descripcion">Descripción:</label>
+                    <textarea class="form-control"  id="descripcion" name="descripcion" required>
+sasaass
+                    </textarea>
+                </div>
+                <div class="form-group">
+                    <label for="precio">Precio:</label>
+                    <input type="number" value="345" class="form-control" id="precio" name="precio" required>
+                </div>
+                <div class="form-group">
+                    <label for="link">Link de la imágen:</label>
+                    <input type="text" value="https://media.istockphoto.com/id/1295633127/es/foto/carne-de-pollo-a-la-parrilla-y-ensalada-de-verduras-frescas-de-tomate-aguacate-lechuga-y.jpg?s=612x612&w=0&k=20&c=gnuOg5gI009lfvkxnObtGubcG7nVVsqH61zIZkdpc-w=" class="form-control" id="link" name="link" required>
+                </div>
+                <div class="form-group">
+                    <label for="categoria">Categoría:</label>
+                    <input type="text" value="categoria" class="form-control" id="categoria" name="categoria" required>
+                </div>
+                <button id="btncrear" class="btn button">Guardar</button>
+            </div>
+        </div>
+
         <div class="col-md-6">
             <h2>Lista de Platos</h2>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Descripción</th>
-                        <th>Precio</th>
-                        <th>Categoría</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var plato in Model)
-                    {
-                        <tr>
-                            <td>@plato.Nombre</td>
-                            <td>@plato.Descripcion</td>
-                            <td>@plato.Precio</td>
-                            <td>@plato.Categoria</td>
-                            <td>
-                                <a href="@Url.Action("Editar", new { id = plato.Id })" class="btn btn-primary btn-sm">Editar</a>
-                                <a href="@Url.Action("Eliminar", new { id = plato.Id })" class="btn btn-danger btn-sm">Eliminar</a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-            <a href="@Url.Action("Crear")" class="btn btn-success">Crear Nuevo Plato</a>
+
+            <div class="blocks">
+                @foreach (var plato in Model)
+                {
+                    <div class="block" data-id="@plato.Id">
+                        <div>@plato.Nombre</div>
+                        <img src="@plato.Imagen"/>
+                        <div class="removebtns">
+                            <a href="@Url.Action("Eliminar", new { id = plato.Id })" class="btn btn-sm remove">Eliminar</a>
+                        </div>
+                    </div>
+                }
+            </div>
         </div>
     </div>
 </div>
 
+<script>
+    
+    var nombre = document.querySelector('#nombre').value;
+    var descripcion = document.querySelector('#descripcion').value;
+    var precio = document.querySelector('#precio').value;
+    var categoria = document.querySelector('#categoria').value;
+    var link = document.querySelector('#link').value;
+    var btncrear = document.querySelector('#btncrear');
+    var blocks = document.querySelectorAll('.block');
+    var removes = document.querySelectorAll('.removebtns');
 
+    removebtns.addEventListener('click', (e) => {
+        e.preventDefault();
 
+    });
+    blocks.forEach(function (block) {
+        block.addEventListener('click', function () {
+            // Obtener el ID del plato seleccionado
+            var id = block.dataset.id;
+            alert('el id es = '+id);
+        });
+    });
+
+    btncrear.addEventListener('click', async (e) => {
+        e.preventDefault();
+        await crearPlato();
+    });
+
+    async function crearPlato() {
+        try {
+          
+            let data = {
+                nombre: nombre,
+                descripcion: descripcion,
+                precio: precio,
+                categoria: categoria,
+                imagen:link
+            };
+
+            // Enviar la solicitud al servidor 
+            let response = await fetch('/Platos/Crear', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            // Verificar el estado de la respuesta
+            if (response.ok) {
+                let result = await response.text();
+                alert(result);
+            } else {
+                alert('Error en la solicitud');
+            }
+            location.href = "/Platos";
+        } catch (error) {
+            alert(error);
+        }
+    }
+</script>

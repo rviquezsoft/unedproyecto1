@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "VuePnjE0HTM/yrbVnPwFg7BGGLhUm2/NmOJaodyv0OU=",
+  "Hash": "yiCQReSXJQmJOWYVWoutmXleu06d9OwvWaX1QiVJs1k=",
   "Source": "Proyecto1",
   "BasePath": "_content/Proyecto1",
   "Mode": "Default",
@@ -49,6 +49,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "/Users/richardviquez/Projects/Proyecto1/obj/Debug/net7.0/scopedcss/projectbundle/Proyecto1.bundle.scp.css"
+    },
+    {
+      "Identity": "/Users/richardviquez/Projects/Proyecto1/wwwroot/css/global.css",
+      "SourceId": "Proyecto1",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/richardviquez/Projects/Proyecto1/wwwroot/",
+      "BasePath": "_content/Proyecto1",
+      "RelativePath": "css/global.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/css/global.css"
     },
     {
       "Identity": "/Users/richardviquez/Projects/Proyecto1/wwwroot/favicon.ico",
