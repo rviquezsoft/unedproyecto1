@@ -11,13 +11,29 @@
         overflow-y: scroll;
     }
 
-    .button {
+    #btncrear {
         margin-top: 1vh;
         background: linear-gradient(176deg, rgba(3,104,221,1) 0%, rgba(21,31,133,1) 40%, rgba(29,102,187,1) 100%);
         color: white;
         padding: 1vh;
-        min-width:50%;
-        text-align:center;
+        min-width: 25%;
+        text-align: center;
+    }
+    #btnagregar {
+        margin-top: 1vh;
+        background: #341f97;
+        color: white;
+        padding: 1vh;
+        min-width: 25%;
+        text-align: center;
+    }
+    #btneditar {
+        margin-top: 1vh;
+        background: #222f3e;
+        color: white;
+        padding: 1vh;
+        min-width: 25%;
+        text-align: center;
     }
     .blocks{
         display:grid;
@@ -63,27 +79,31 @@
             <div>
                 <div class="form-group">
                     <label for="nombre">Nombre:</label>
-                    <input type="text" value="nombre" class="form-control" id="nombre" name="nombre" required>
+                    <input type="text" value="" class="form-control" id="nombre" name="nombre" required>
                 </div>
                 <div class="form-group">
                     <label for="descripcion">Descripción:</label>
-                    <textarea class="form-control"  id="descripcion" name="descripcion" required>
-sasaass
+                    <textarea class="form-control" id="descripcion" name="descripcion" required>
                     </textarea>
                 </div>
                 <div class="form-group">
                     <label for="precio">Precio:</label>
-                    <input type="number" value="345" class="form-control" id="precio" name="precio" required>
+                    <input type="number" value="0" class="form-control" id="precio" name="precio" required>
                 </div>
                 <div class="form-group">
                     <label for="link">Link de la imágen:</label>
-                    <input type="text" value="https://media.istockphoto.com/id/1295633127/es/foto/carne-de-pollo-a-la-parrilla-y-ensalada-de-verduras-frescas-de-tomate-aguacate-lechuga-y.jpg?s=612x612&w=0&k=20&c=gnuOg5gI009lfvkxnObtGubcG7nVVsqH61zIZkdpc-w=" class="form-control" id="link" name="link" required>
+                    <input type="text" value="" class="form-control" id="link" name="link" required>
                 </div>
                 <div class="form-group">
                     <label for="categoria">Categoría:</label>
-                    <input type="text" value="categoria" class="form-control" id="categoria" name="categoria" required>
+                    <select class="form-control" id="categoria" name="categoria" required>
+                        <option value="local">Local</option>
+                        <option value="extranjero">Extranjero</option>
+                    </select>
                 </div>
-                <button id="btncrear" class="btn button">Guardar</button>
+                <button id="btnagregar" class="btn button">Crear Nuevo</button>
+                <button id="btneditar" disabled class="btn button">Modificar</button>
+                <button id="btncrear" disabled class="btn button">Guardar</button>
             </div>
         </div>
 
@@ -96,8 +116,10 @@ sasaass
                     <div class="block" data-id="@plato.Id">
                         <div>@plato.Nombre</div>
                         <img src="@plato.Imagen"/>
-                        <div class="removebtns">
-                            <a href="@Url.Action("Eliminar", new { id = plato.Id })" class="btn btn-sm remove">Eliminar</a>
+                        <div class="removebtns" data-id="@plato.Id">
+                            <a href="@Url.Action("Eliminar",
+                                    new { id = plato.Id })"
+                               class="btn btn-sm remove">Eliminar</a>
                         </div>
                     </div>
                 }
@@ -106,27 +128,43 @@ sasaass
     </div>
 </div>
 
-<script>
-    
-    var nombre = document.querySelector('#nombre').value;
-    var descripcion = document.querySelector('#descripcion').value;
-    var precio = document.querySelector('#precio').value;
-    var categoria = document.querySelector('#categoria').value;
-    var link = document.querySelector('#link').value;
+<script defer>
+    var selected = 0;
+    var nombre = document.querySelector('#nombre');
+    var descripcion = document.querySelector('#descripcion');
+    var precio = document.querySelector('#precio');
+    var categoria = document.querySelector('#categoria');
+    var link = document.querySelector('#link');
     var btncrear = document.querySelector('#btncrear');
+    var btnagregar = document.querySelector('#btnagregar');
+    var btneditar = document.querySelector('#btneditar');
     var blocks = document.querySelectorAll('.block');
     var removes = document.querySelectorAll('.removebtns');
 
-    removebtns.addEventListener('click', (e) => {
-        e.preventDefault();
-
-    });
-    blocks.forEach(function (block) {
-        block.addEventListener('click', function () {
-            // Obtener el ID del plato seleccionado
-            var id = block.dataset.id;
-            alert('el id es = '+id);
+    removes.forEach((rem) => {
+        rem.addEventListener('click', async(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            let id = rem.dataset.id;
+            selected = id;
+            await eliminarPlato(id);
         });
+    });
+    blocks.forEach( (block)=> {
+        block.addEventListener('click', async(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            let id = block.dataset.id;
+            selected = id;
+            btneditar.disabled = false;
+            btncrear.disabled = true;
+            await obtenerPlato(id);
+        });
+    });
+
+    btnagregar.addEventListener('click', async (e) => {
+        e.preventDefault();
+        reset();
     });
 
     btncrear.addEventListener('click', async (e) => {
@@ -134,20 +172,116 @@ sasaass
         await crearPlato();
     });
 
+    btneditar.addEventListener('click', async (e) => {
+        e.preventDefault();
+        if (selected == 0) {
+            alert('Debe seleccionar un plato primero!');
+            return false;
+        }
+        await modificarPlato(selected);
+    });
+
+    async function obtenerPlato(id) {
+        try {
+
+            // Enviar la solicitud al servidor 
+            let response = await fetch('/Platos/GetById?id='+id, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            // Verificar el estado de la respuesta
+            if (response.ok) {
+                let result = await response.json();
+                nombre.value = result.nombre;
+                descripcion.value = result.descripcion;
+                precio.value = result.precio;
+                categoria.value = result.categoria;
+                link.value = result.imagen;
+            } else {
+                alert('Error en la solicitud');
+                selected = 0;
+                reset();
+            }
+        } catch (error) {
+            reset();
+            selected = 0;
+            alert(error);
+        }
+    }
+
+    function reset()
+    {
+        nombre.value = '';
+        descripcion.value = '';
+        precio.value = '';
+        categoria.value = '';
+        link.value = '';
+        selected = 0;
+        btneditar.disabled = true;
+        btncrear.disabled = false;
+    }
     async function crearPlato() {
         try {
           
             let data = {
-                nombre: nombre,
-                descripcion: descripcion,
-                precio: precio,
-                categoria: categoria,
-                imagen:link
+                nombre: nombre.value,
+                descripcion: descripcion.value,
+                precio: precio.value,
+                categoria: categoria.value,
+                imagen: link.value
             };
 
             // Enviar la solicitud al servidor 
             let response = await fetch('/Platos/Crear', {
                 method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            // Verificar el estado de la respuesta
+            if (response.ok) {
+                let result = await response.text();
+                if (result == null ||
+                    result == undefined
+                    || result == typeof (undefined)
+                    || result == typeof(null)||
+                    !result.includes('correctamente')) {
+
+                    alert(result);
+                    return false;
+                }
+                alert(result);
+                location.href = "/Platos";
+            } else {
+                alert('Error en la solicitud');
+            }
+            
+        } catch (error) {
+            reset();
+            alert(error);
+        }
+    }
+
+    async function modificarPlato(id) {
+        try {
+
+            let data = {
+                id: id,
+                nombre: nombre.value,
+                descripcion: descripcion.value,
+                precio: precio.value,
+                categoria: categoria.value,
+                imagen: link.value
+            };
+
+            // Enviar la solicitud al servidor 
+            let response = await fetch('/Platos/Update', {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -163,6 +297,35 @@ sasaass
             }
             location.href = "/Platos";
         } catch (error) {
+            reset();
+            alert(error);
+        }
+    }
+
+    async function eliminarPlato(id) {
+        try {
+
+            let data = id;
+
+            // Enviar la solicitud al servidor 
+            let response = await fetch('/Platos/Delete', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            // Verificar el estado de la respuesta
+            if (response.ok) {
+                let result = await response.text();
+                alert(result);
+            } else {
+                alert('Error en la solicitud');
+            }
+            location.href = "/Platos";
+        } catch (error) {
+            reset();
             alert(error);
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Proyecto1.Models;
+using Proyecto1.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddSingleton<List<Plato>>();
+//se delara así para no tener que declarar uno por cada `T`
+builder.Services.AddScoped(typeof(ICRUDService<>),typeof(CRUDService<>));
 
 var app = builder.Build();
 
