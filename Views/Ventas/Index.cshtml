@@ -1,3 +1,333 @@
-﻿@{
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
+﻿
+
+<style>
+
+    .remove {
+        color: white;
+        background-color: #ff4757;
+    }
+
+    .tablescroll {
+        overflow-y: scroll;
+    }
+
+    #btncrear {
+        margin-top: 1vh;
+        background: linear-gradient(176deg, rgba(3,104,221,1) 0%, rgba(21,31,133,1) 40%, rgba(29,102,187,1) 100%);
+        color: white;
+        padding: 1vh;
+        min-width: 25%;
+        text-align: center;
+    }
+
+    #btnagregar {
+        margin-top: 1vh;
+        background: #341f97;
+        color: white;
+        padding: 1vh;
+        min-width: 25%;
+        text-align: center;
+    }
+
+    #btneditar {
+        margin-top: 1vh;
+        background: #222f3e;
+        color: white;
+        padding: 1vh;
+        min-width: 25%;
+        text-align: center;
+    }
+
+    .blocks {
+        display: grid;
+        width: 100%;
+        height: 100%;
+        grid-template-columns: repeat(auto-fill,minmax(12rem,1fr));
+        grid-column-gap: 1px;
+        grid-auto-rows: 12rem;
+    }
+
+    .block {
+        display: grid;
+        max-height: 12rem;
+        min-width: 99%;
+        height: 100%;
+        width: 99%;
+        grid-template-rows: 20% 60% 20%;
+        text-align: center;
+        background-color: white;
+        box-shadow: 2px 2px 8px 4px #d3d3d3d1;
+        border-radius: 15px;
+    }
+
+        .block img {
+            max-width: 100%;
+            max-height: 100%;
+            width: 100%;
+            height: 100%;
+        }
+
+        .block a {
+            width: 100%;
+        }
+
+    h1, h2 {
+        text-align: center;
+    }
+
+    #btnvolver {
+        margin-top: 1vh;
+        background: #341f97;
+        color: white;
+        padding: 1vh;
+        min-width: 25%;
+        text-align: center;
+    }
+</style>
+
+
+<div class="container-fluid" style="margin-top:2vh;margin-bottom:1vh;">
+    <div class="row">
+        <button id="btnvolver" class="btn button">
+            <i class="fas fa-arrow-left"></i> Volver atrás
+        </button>
+        <div class="col-md-6 form">
+            <h1>Mantenimiento de Ventas</h1>
+            <h2>Crear Venta</h2>
+            <div>
+                <div class="form-group">
+                    <label for="nombre">Nombre de plato vendido:</label>
+                    <input type="text" value="" class="form-control" id="nombrePlatoVendido" name="nombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="fecha">Fecha de la venta:</label>
+                    <input type="datetime-local"
+                           min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")"
+                           value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")"
+                           id="fechaHoraVenta" />
+                </div>
+                <div class="form-group">
+                    <label for="link">Cantidad vendida:</label>
+                    <input type="number" value="0" class="form-control" id="cantidadVendida" name="link" required>
+                </div>
+                <button id="btnagregar" class="btn button">Crear Nuevo</button>
+                <button id="btneditar" disabled class="btn button">Modificar</button>
+                <button id="btncrear" disabled class="btn button">Guardar</button>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h2>Lista de Ventas</h2>
+
+            <div class="blocks">
+                @foreach (var venta in Model)
+                {
+                    <div class="block" data-id="@venta.NumeroOrden">
+                        <div>@venta.NombrePlatoVendido</div>
+                        <div class="removebtns" data-id="@venta.NumeroOrden">
+                            <a href="@Url.Action("Eliminar",
+                                    new { id = venta.NumeroOrden })"
+                               class="btn btn-sm remove">Eliminar</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script defer>var selected = 0;
+    var fechaHoraVenta = document.querySelector('#fechaHoraVenta');
+    var nombrePlatoVendido = document.querySelector('#nombrePlatoVendido');
+    var cantidadVendida = document.querySelector('#cantidadVendida');
+    var btncrear = document.querySelector('#btncrear');
+    var btnagregar = document.querySelector('#btnagregar');
+    var btneditar = document.querySelector('#btneditar');
+    var blocks = document.querySelectorAll('.block');
+    var removes = document.querySelectorAll('.removebtns');
+
+    var btnvolver = document.querySelector('#btnvolver');
+
+    btnvolver.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.history.back();
+    });
+
+    removes.forEach((rem) => {
+        rem.addEventListener('click', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            let id = rem.dataset.id;
+            selected = id;
+            await eliminarVenta(id);
+        });
+    });
+    blocks.forEach((block) => {
+        block.addEventListener('click', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            let id = block.dataset.id;
+            selected = id;
+            btneditar.disabled = false;
+            btncrear.disabled = true;
+            await obtenerVenta(id);
+        });
+    });
+
+    btnagregar.addEventListener('click', async (e) => {
+        e.preventDefault();
+        reset();
+    });
+
+    btncrear.addEventListener('click', async (e) => {
+        e.preventDefault();
+        await crearVenta();
+    });
+
+    btneditar.addEventListener('click', async (e) => {
+        e.preventDefault();
+        if (selected == 0) {
+            alert('Debe seleccionar un plato primero!');
+            return false;
+        }
+        await modificarPlato(selected);
+    });
+
+    async function obtenerVenta(id) {
+        try {
+
+            // Enviar la solicitud al servidor
+            let response = await fetch('/Ventas/GetById?id=' + id, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            // Verificar el estado de la respuesta
+            if (response.ok) {
+                let result = await response.json();
+                nombrePlatoVendido.value = result.nombrePlatoVendido;
+                fechaHoraVenta.value = result.fechaHoraVenta;
+                cantidadVendida.value = result.cantidadVendida;
+            } else {
+                alert('Error en la solicitud');
+                selected = 0;
+                reset();
+            }
+        } catch (error) {
+            reset();
+            selected = 0;
+            alert(error);
+        }
+    }
+
+    function reset() {
+        nombrePlatoVendido.value = '';
+        fechaHoraVenta.value = '';
+        cantidadVendida.value = '';
+        selected = 0;
+        btneditar.disabled = true;
+        btncrear.disabled = false;
+    }
+    async function crearVenta() {
+        try {
+
+            let data = {
+                nombrePlatoVendido: nombrePlatoVendido.value,
+                fechaHoraVenta: fechaHoraVenta.value,
+                cantidadVendida: cantidadVendida.value
+            };
+
+            // Enviar la solicitud al servidor
+            let response = await fetch('/Ventas/Crear', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            // Verificar el estado de la respuesta
+            if (response.ok) {
+                let result = await response.text();
+                if (result == null ||
+                    result == undefined
+                    || result == typeof (undefined)
+                    || result == typeof (null) ||
+                    !result.includes('correctamente')) {
+
+                    alert(result);
+                    return false;
+                }
+                alert(result);
+                location.href = "/Ventas";
+            } else {
+                alert('Error en la solicitud');
+            }
+
+        } catch (error) {
+            reset();
+            alert(error);
+        }
+    }
+
+    async function modificarVenta(id) {
+        try {
+
+            let data = {
+                nombrePlatoVendido: nombrePlatoVendido.value,
+                fechaHoraVenta: fechaHoraVenta.value,
+                cantidadVendida: cantidadVendida.value
+            };
+
+            // Enviar la solicitud al servidor
+            let response = await fetch('/Ventas/Update', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            // Verificar el estado de la respuesta
+            if (response.ok) {
+                let result = await response.text();
+                alert(result);
+            } else {
+                alert('Error en la solicitud');
+            }
+            location.href = "/Ventas";
+        } catch (error) {
+            reset();
+            alert(error);
+        }
+    }
+
+    async function eliminarVenta(id) {
+        try {
+
+            let data = id;
+
+            // Enviar la solicitud al servidor
+            let response = await fetch('/Ventas/Delete', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            // Verificar el estado de la respuesta
+            if (response.ok) {
+                let result = await response.text();
+                alert(result);
+            } else {
+                alert('Error en la solicitud');
+            }
+            location.href = "/Ventas";
+        } catch (error) {
+            reset();
+            alert(error);
+        }
+    }</script>

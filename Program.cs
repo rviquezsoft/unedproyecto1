@@ -7,6 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddSingleton<List<Plato>>();
+builder.Services.AddSingleton<List<Reserva>>();
+builder.Services.AddSingleton<List<Venta>>();
 //se delara así para no tener que declarar uno por cada `T`
 builder.Services.AddScoped(typeof(ICRUDService<>),typeof(CRUDService<>));
 

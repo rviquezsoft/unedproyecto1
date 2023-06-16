@@ -67,15 +67,27 @@
     h1,h2{
         text-align:center;
     }
+
+    #btnvolver {
+        margin-top: 1vh;
+        background: #341f97;
+        color: white;
+        padding: 1vh;
+        min-width: 25%;
+        text-align: center;
+    }
    
 </style>
 
 
 <div class="container-fluid" style="margin-top:2vh;margin-bottom:1vh;">
     <div class="row">
+        <button id="btnvolver" class="btn button" >
+            <i class="fas fa-arrow-left"></i> Volver atrás
+        </button>
         <div class="col-md-6 form">
             <h1>Mantenimiento de Platos</h1>
-            <h2>Crear Nuevo Plato</h2>
+            <h2>Crear  Plato</h2>
             <div>
                 <div class="form-group">
                     <label for="nombre">Nombre:</label>
@@ -115,7 +127,7 @@
                 {
                     <div class="block" data-id="@plato.Id">
                         <div>@plato.Nombre</div>
-                        <img src="@plato.Imagen"/>
+                        <img src="@plato.Imagen" />
                         <div class="removebtns" data-id="@plato.Id">
                             <a href="@Url.Action("Eliminar",
                                     new { id = plato.Id })"
@@ -140,6 +152,13 @@
     var btneditar = document.querySelector('#btneditar');
     var blocks = document.querySelectorAll('.block');
     var removes = document.querySelectorAll('.removebtns');
+
+    var btnvolver = document.querySelector('#btnvolver');
+
+    btnvolver.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.history.back();
+    });
 
     removes.forEach((rem) => {
         rem.addEventListener('click', async(e) => {

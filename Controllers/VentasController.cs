@@ -4,90 +4,61 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Proyecto1.Models;
+using Proyecto1.Services;
 
 namespace Proyecto1.Views
 {
     public class VentasController : Controller
     {
-        // GET: Ventas
+        private readonly ICRUDService<Venta> _ventas;
+        public VentasController(ICRUDService<Venta> ventas)
+        {
+            _ventas = ventas;
+        }
         public ActionResult Index()
         {
-            return View();
+            return View(_ventas.Get());
         }
 
-        // GET: Ventas/Details/5
-        public ActionResult Details(int id)
+
+        [HttpGet]
+        public Venta GetById([FromQuery] int id)
         {
-            return View();
+            return _ventas.GetById("NumeroOrden", id);
         }
-
-        // GET: Ventas/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Ventas/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public string Crear([FromBody] Venta venta)
         {
-            try
-            {
-                // TODO: Add insert logic here
+            string result = "";
 
-                return RedirectToAction(nameof(Index));
-            }
-            catch
+            if (venta == null || string.IsNullOrWhiteSpace(venta.NombrePlatoVendido) ||
+                venta.CantidadVendida < 1 ||
+                venta.NumeroOrden < 1)
             {
-                return View();
+                return "Existen datos erróneos o incompletos";
             }
+
+            venta.NumeroOrden = _ventas.CountAll() + 1;//asignar un id
+            return _ventas.Add(venta);
         }
-
-        // GET: Ventas/Edit/5
-        public ActionResult Edit(int id)
+        [HttpPut]
+        public string Update([FromBody] Venta venta)
         {
-            return View();
+            string result = "";
+
+            if (venta == null || string.IsNullOrWhiteSpace(venta.NombrePlatoVendido) ||
+               venta.CantidadVendida < 1 ||
+               venta.NumeroOrden < 1)
+            {
+                return "Existen datos erróneos o incompletos";
+            }
+            return _ventas.Update(venta, "NumeroOrden", venta.NumeroOrden);
         }
-
-        // POST: Ventas/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        [HttpDelete]
+        public string Delete([FromBody] int id)
         {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: Ventas/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: Ventas/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            return _ventas.Delete("NumeroOrden", id);
         }
     }
 }
