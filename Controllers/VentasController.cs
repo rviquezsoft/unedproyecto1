@@ -33,8 +33,7 @@ namespace Proyecto1.Views
             string result = "";
 
             if (venta == null || string.IsNullOrWhiteSpace(venta.NombrePlatoVendido) ||
-                venta.CantidadVendida < 1 ||
-                venta.NumeroOrden < 1)
+                venta.CantidadVendida < 1)
             {
                 return "Existen datos erróneos o incompletos";
             }
@@ -48,8 +47,7 @@ namespace Proyecto1.Views
             string result = "";
 
             if (venta == null || string.IsNullOrWhiteSpace(venta.NombrePlatoVendido) ||
-               venta.CantidadVendida < 1 ||
-               venta.NumeroOrden < 1)
+                venta.CantidadVendida < 1)
             {
                 return "Existen datos erróneos o incompletos";
             }

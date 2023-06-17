@@ -124,9 +124,9 @@
                 @foreach (var reserva in Model)
                 {
                     <div class="block" data-id="@reserva.NumeroReserva">
-                        <div>@reserva.NombreCliente</div>
-                        <div>@reserva.FechaHoraReserva</div>
-                        <div>@reserva.NumeroPersonas</div>
+                        <div><h2 style="overflow: hidden; text-overflow: ellipsis; width: 100%; max-width: 100%; white-space: nowrap; ">@reserva.NombreCliente</h2></div>
+                        <div><h6 style="overflow: hidden; text-overflow: ellipsis; width: 100%; max-width: 100%; white-space: nowrap; ">@reserva.FechaHoraReserva</h6></div>
+                        <div><h1 style="overflow: hidden; text-overflow: ellipsis; width: 100%; max-width: 100%; white-space: nowrap; ">@reserva.NumeroPersonas</h1></div>
                         <div class="removebtns" data-id="@reserva.NumeroReserva">
                             <a href="@Url.Action("Eliminar",
                                     new { id = reserva.NumeroReserva })"
@@ -228,8 +228,19 @@
 
     function reset()
     {
+        let fechaHora = new Date();
+
+
+        let year = fechaHora.getFullYear();
+        let month = String(fechaHora.getMonth() + 1).padStart(2, '0');
+        let day = String(fechaHora.getDate()).padStart(2, '0');
+        let hours = String(fechaHora.getHours()).padStart(2, '0');
+        let minutes = String(fechaHora.getMinutes()).padStart(2, '0');
+
+        let fechaHoraFormateada = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes;
+
+        fechaHoraReserva.value = fechaHoraFormateada;
         nombreCliente.value = '';
-        fechaHoraReserva.value = '';
         numeroPersonas.value = '';
         selected = 0;
         btneditar.disabled = true;
@@ -239,9 +250,9 @@
         try {
 
             let data = {
-                nombreCliente: result.nombreCliente,
-                fechaHoraReserva: result.fechaHoraReserva,
-                numeroPersonas: result.numeroPersonas
+                nombreCliente: nombreCliente.value,
+                fechaHoraReserva: fechaHoraReserva.value,
+                numeroPersonas: numeroPersonas.value
             };
 
             // Enviar la solicitud al servidor
@@ -281,9 +292,10 @@
         try {
 
             let data = {
-                nombreCliente: result.nombreCliente,
-                fechaHoraReserva: result.fechaHoraReserva,
-                numeroPersonas: result.numeroPersonas
+                numeroReserva:id,
+                nombreCliente: nombreCliente.value,
+                fechaHoraReserva: fechaHoraReserva.value,
+                numeroPersonas: numeroPersonas.value
             };
 
             // Enviar la solicitud al servidor

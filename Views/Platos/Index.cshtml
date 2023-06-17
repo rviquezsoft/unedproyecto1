@@ -126,8 +126,8 @@
                 @foreach (var plato in Model)
                 {
                     <div class="block" data-id="@plato.Id">
-                        <div>@plato.Nombre</div>
-                        <img src="@plato.Imagen" />
+                        <div style="overflow: hidden; text-overflow: ellipsis; width: 100%; max-width: 100%; white-space: nowrap;">@plato.Nombre</div>
+                        <img src="@plato.Imagen" style="max-width: 100%;max-height:100%"/>
                         <div class="removebtns" data-id="@plato.Id">
                             <a href="@Url.Action("Eliminar",
                                     new { id = plato.Id })"

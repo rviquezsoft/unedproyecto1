@@ -34,8 +34,7 @@ namespace Proyecto1.Views
             string result = "";
 
             if (reserva == null || string.IsNullOrWhiteSpace(reserva.NombreCliente) ||
-                reserva.NumeroPersonas < 1 ||
-                reserva.NumeroReserva < 1)
+                reserva.NumeroPersonas < 1 )
             {
                 return "Existen datos erróneos o incompletos";
             }
@@ -49,8 +48,7 @@ namespace Proyecto1.Views
             string result = "";
 
             if (reserva == null || string.IsNullOrWhiteSpace(reserva.NombreCliente) ||
-                reserva.NumeroPersonas<1 ||
-                reserva.NumeroReserva<1)
+                 reserva.NumeroPersonas < 1)
             {
                 return "Existen datos erróneos o incompletos";
             }

@@ -70,6 +70,7 @@
         .block a {
             width: 100%;
         }
+   
 
     h1, h2 {
         text-align: center;
@@ -123,7 +124,9 @@
                 @foreach (var venta in Model)
                 {
                     <div class="block" data-id="@venta.NumeroOrden">
-                        <div>@venta.NombrePlatoVendido</div>
+                        <div><h2 style="overflow: hidden; text-overflow: ellipsis;width:100%; max-width: 100%; white-space: nowrap; ">@venta.NombrePlatoVendido</h2></div>
+                        <div><h6 style="overflow: hidden; text-overflow: ellipsis; width: 100%; max-width: 100%; white-space: nowrap; ">@venta.FechaHoraVenta</h6></div>
+                        <div><h1 style="overflow: hidden; text-overflow: ellipsis; width: 100%; max-width: 100%; white-space: nowrap; ">@venta.CantidadVendida</h1></div>
                         <div class="removebtns" data-id="@venta.NumeroOrden">
                             <a href="@Url.Action("Eliminar",
                                     new { id = venta.NumeroOrden })"
@@ -190,7 +193,7 @@
             alert('Debe seleccionar un plato primero!');
             return false;
         }
-        await modificarPlato(selected);
+        await modificarVenta(selected);
     });
 
     async function obtenerVenta(id) {
@@ -223,8 +226,19 @@
     }
 
     function reset() {
+        let fechaHora = new Date();
+
+  
+        let year = fechaHora.getFullYear();
+        let month = String(fechaHora.getMonth() + 1).padStart(2, '0');
+        let day = String(fechaHora.getDate()).padStart(2, '0');
+        let hours = String(fechaHora.getHours()).padStart(2, '0');
+        let minutes = String(fechaHora.getMinutes()).padStart(2, '0');
+
+        let fechaHoraFormateada = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes;
+
         nombrePlatoVendido.value = '';
-        fechaHoraVenta.value = '';
+        fechaHoraVenta.value = fechaHoraFormateada;
         cantidadVendida.value = '';
         selected = 0;
         btneditar.disabled = true;
@@ -276,6 +290,7 @@
         try {
 
             let data = {
+                numeroOrden: id,
                 nombrePlatoVendido: nombrePlatoVendido.value,
                 fechaHoraVenta: fechaHoraVenta.value,
                 cantidadVendida: cantidadVendida.value
